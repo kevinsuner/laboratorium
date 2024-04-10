@@ -50,4 +50,8 @@ debug = true;`
     fmt.Printf("title: \t%s\n", values.GetString("title"))
     fmt.Printf("port: \t%d\n", values.GetInt64("port"))
     fmt.Printf("debug: \t%t\n", values.GetBoolean("debug"))
+    
+    // title:  foobar
+    // port:   8080
+    // debug:  true
 }

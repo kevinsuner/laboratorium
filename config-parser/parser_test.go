@@ -49,8 +49,8 @@ func checkParserErrors(t *testing.T, p *Parser) {
 }
 
 func testDeclaration(t *testing.T, d Declaration, name string) bool {
-    if len(d.TokenLiteral()) == 0 {
-        t.Error("d.TokenLiteral of zero length")
+    if len(d.Ident()) == 0 {
+        t.Error("d.Ident of zero length")
         return false
     }
 
@@ -62,12 +62,6 @@ func testDeclaration(t *testing.T, d Declaration, name string) bool {
 
     if statement.Name.Val != name {
         t.Errorf("statement.Name.Val not '%s'. got=%s", name, statement.Name.Val)
-        return false
-    }
-
-    if statement.Name.TokenLiteral() != name {
-        t.Errorf("statement.Name.TokenLiteral() not '%s'. got=%s",
-            name, statement.Name.TokenLiteral())
         return false
     }
 

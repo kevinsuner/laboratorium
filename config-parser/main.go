@@ -2,10 +2,34 @@ package main
 
 import "fmt"
 
-// TODO's
-// Use Value() to return the value of the expression
-//  - Don't know if it should return string or any
-// Add TokenType() to return the token type of the declaration/expression
+type Values map[string]any
+
+func (v Values) GetString(key string) string {
+    val, ok := v[key].(string)
+    if !ok {
+        return ""
+    }
+
+    return val
+}
+
+func (v Values) GetInt64(key string) int64 {
+    val, ok := v[key].(int64)
+    if !ok {
+        return 0
+    }
+
+    return val
+}
+
+func (v Values) GetBoolean(key string) bool {
+    val, ok := v[key].(bool)
+    if !ok {
+        return false
+    }
+
+    return val
+}
 
 func main() {
     input := `title = "foobar";
@@ -14,11 +38,16 @@ debug = true;`
 
     lexer := NewLexer(input)
     parser := NewParser(lexer)
-
     config := parser.ParseConfig()
+       
+    values := make(Values, 0)
     for _, declaration := range config.declarations {
-        fmt.Printf("ident: \t%s\n", declaration.Ident())
-        fmt.Printf("type: \t%s\n", declaration.Type())
-        fmt.Printf("value: \t%v\n", declaration.Value())
+       if _, ok := values[declaration.Ident()]; !ok {
+            values[declaration.Ident()] = declaration.Value()
+       }
     }
+
+    fmt.Printf("title: \t%s\n", values.GetString("title"))
+    fmt.Printf("port: \t%d\n", values.GetInt64("port"))
+    fmt.Printf("debug: \t%t\n", values.GetBoolean("debug"))
 }

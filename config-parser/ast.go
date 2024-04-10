@@ -1,10 +1,9 @@
 package main
 
-import "bytes"
-
 type Node interface {
-    TokenLiteral()  string
-    Value()         string
+    Ident()      string
+    Type()      string
+    Value()     any
 }
 
 type Declaration interface {
@@ -21,32 +20,6 @@ type Config struct {
     declarations []Declaration
 }
 
-func (c *Config) TokenLiteral() string {
-    if len(c.declarations) > 0 {
-        return c.declarations[0].TokenLiteral()
-    } else {
-        return ""
-    }
-}
-
-func (c *Config) Value() string {
-    var out bytes.Buffer
-    for _, declaration := range c.declarations {
-        out.WriteString(declaration.Value())
-    }
-
-    return out.String()
-}
-
-type Identifier struct {
-    Token   Token
-    Val     string
-}
-
-func (i *Identifier) expressionNode() {}
-func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
-func (i *Identifier) Value() string { return i.Val }
-
 type Statement struct {
     Token   Token
     Name    *Identifier
@@ -54,18 +27,19 @@ type Statement struct {
 }
 
 func (s *Statement) declarationNode() {}
-func (s *Statement) TokenLiteral() string { return s.Token.Literal }
-func (s *Statement) Value() string {
-    var out bytes.Buffer
-    out.WriteString(s.TokenLiteral())
-    out.WriteString(" = ")
-    
-    if s.Val != nil {
-        out.WriteString(s.Val.Value())
-    }
+func (s *Statement) Ident() string { return s.Token.Literal }
+func (s *Statement) Type() string { return s.Val.Type() }
+func (s *Statement) Value() any { return s.Val.Value() }
 
-    return out.String()
+type Identifier struct {
+    Token   Token
+    Val     string
 }
+
+func (i *Identifier) expressionNode() {}
+func (i *Identifier) Ident() string { return "" } // noop
+func (i *Identifier) Type() string { return string(i.Token.Type) }
+func (i *Identifier) Value() any { return i.Val }
 
 type Integer struct {
     Token Token
@@ -73,8 +47,9 @@ type Integer struct {
 }
 
 func (i *Integer) expressionNode() {}
-func (i *Integer) TokenLiteral() string { return i.Token.Literal }
-func (i *Integer) Value() string { return i.Token.Literal }
+func (i *Integer) Ident() string { return "" } // noop
+func (i *Integer) Type() string { return string(i.Token.Type) }
+func (i *Integer) Value() any { return i.Val }
 
 type String struct {
     Token Token
@@ -82,8 +57,9 @@ type String struct {
 }
 
 func (s *String) expressionNode() {}
-func (s *String) TokenLiteral() string { return s.Token.Literal }
-func (s *String) Value() string { return s.Token.Literal }
+func (s *String) Ident() string { return "" } // noop
+func (s *String) Type() string { return string(s.Token.Type) }
+func (s *String) Value() any { return s.Val }
 
 type Boolean struct {
     Token Token
@@ -91,5 +67,6 @@ type Boolean struct {
 }
 
 func (b *Boolean) expressionNode() {}
-func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
-func (b *Boolean) Value() string { return b.Token.Literal }
+func (b *Boolean) Ident() string { return "" } // noop
+func (b *Boolean) Type() string { return string(b.Token.Type) }
+func (b *Boolean) Value() any { return b.Val }
